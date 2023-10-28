@@ -4,7 +4,7 @@ import socket
 from server_func import *
 
 # Server IP is where the server python file will be running and accepting connections
-server = "localhost" #"127.0.0.1"
+server = "192.168.43.138" #"127.0.0.1"
 # Port is where server will keep listening. Better to use a higher port as that is usually not used
 port = 5555
 

@@ -120,7 +120,7 @@ def update_bat_ball(dto):
 # Create a socket for the server and client connection
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Server IP is where the server python file is running and listening for connections
-server = "localhost"
+server = "192.168.43.138"
 # Port is where server is listening.
 port = 5555
 addr = (server, port)
