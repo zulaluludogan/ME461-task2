@@ -1,13 +1,28 @@
 #!/usr/bin/env python3
 
-import pygame
-import cv2
+try:
+    import pygame
+    import cv2
+    import numpy as np
+except:
+    print("Pygame, opencv and numpy should be installed. Running pip install")
+    try:
+        from subprocess import run
+        run(['pip','install','-r','requirements.txt'])
+    except:
+        print("pip install failed")
+        raise ImportError
+
+try:
+    from classes.mpcontroller import *
+    from classes.tangui import *
+    from classes.tangamegui import *
+except:
+    print("Missing custom libraries. Did you move this python file?")
+    raise ImportError
+
 import time
-import numpy as np
 import random
-from classes.mpcontroller import *
-from classes.tangui import *
-from classes.tangamegui import *
 import socket
 import struct
 

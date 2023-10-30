@@ -1,9 +1,15 @@
+
 import time
 try:
     import mediapipe as mp
 except:
-    print("Mediapipe should be installed. pip install mediapipe")
-    raise ImportError
+    print("Mediapipe should be installed. Running pip install mediapipe")
+    try:
+        from subprocess import run
+        run(['pip','install','mediapipe'])
+    except:
+        print("pip install failed")
+        raise ImportError
 
 class MP_Controller:
     def __init__(self, mode=1):
