@@ -26,7 +26,7 @@ import random
 import socket
 import struct
 
-HOSTIP = "127.0.0.1"  # Standard loopback interface address (localhost)
+HOSTIP = "192.168.248.241"  # Standard loopback interface address (localhost)
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 DATAFORMAT = "<fffi"
 
@@ -166,7 +166,7 @@ def main(args=None):
         r_bar = Bar(resolution[0]*(630/640), resolution[1]*(180/360),resolution[1]*(20/360),resolution[1]*(90/360),resolution[1])
         vel = np.random.random(2)
         vel[1] /= 2
-        vel = vel*resolution[0]*(8/640)/np.sqrt(vel.dot(vel))
+        vel = vel*resolution[0]*(12/640)/np.sqrt(vel.dot(vel))
         ball = Ball(resolution[0]*(320/640), resolution[1]*(180/360), resolution[1]*(10/360), vel, resolution[0], resolution[1])
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -178,6 +178,7 @@ def main(args=None):
             done = eventcheck()
 
             ret, frame = cap.read()
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
             frame = cv2.flip(frame, 1)
             bgframe = cv2.resize(frame,(np.array(frame.shape[1::-1])*(resolution[0]/640)).astype(int))
             surface = pygame.surfarray.make_surface(bgframe.swapaxes(0, 1)[:,:,::-1])
@@ -235,19 +236,23 @@ def main(args=None):
                                 act = 2
                             if score[0] == 9 or score[1] == 9:
                                 GAMEMODE = 0
+                                # client.close()
+                                # s.close()
+                                # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
                             texts[0].setText(f"Score: {score[0]}-{score[1]}")
                             ball.setPos((resolution[0]*(320/640), resolution[1]*(180/360)))
                             vel = np.random.random(2)
                             vel[1] /= 2
-                            vel = vel*resolution[0]*(8/640)/np.sqrt(vel.dot(vel))
+                            vel = vel*resolution[0]*(12/640)/np.sqrt(vel.dot(vel))
                             ball.setVel(vel)
-
-                        client.sendmsg(struct.pack(DATAFORMAT, r_bar.y/resolution[1], ball.x/resolution[0], ball.y/resolution[1], act))
+                        if GAMEMODE != 0:
+                            client.sendmsg((struct.pack(DATAFORMAT, r_bar.y/resolution[1], ball.x/resolution[0], ball.y/resolution[1], act),))
                 else:
                     mp_controller.detect_async(frame, GAMEMODE)
                     texts[1].visibility = False
                     try:
-                        raw = s.recvmsg(struct.calcsize(DATAFORMAT))
+                        raw, _, _, _ = s.recvmsg(struct.calcsize(DATAFORMAT))
                     except BlockingIOError:
                         pass # No new data. Reuse old data
                     else:
@@ -274,13 +279,14 @@ def main(args=None):
                         # pub.publish(msg)
                         index = (int(index[0]*resolution[0]),int(index[1]*resolution[1]*4/3))
                         l_bar.sety(index[1])
+                    if GAMEMODE != 0:
                         packet = struct.pack(DATAFORMAT,l_bar.y/resolution[1],0.,0.,0)
-                        s.sendmsg(packet)
+                        s.sendmsg((packet,))
 
                     
                     
             render(display,index)
-            clock.tick(30)
+            print(clock.tick(30))
     except:
         cap.release()
         pygame.quit()
