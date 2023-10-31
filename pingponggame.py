@@ -26,7 +26,7 @@ import random
 import socket
 import struct
 
-HOSTIP = "192.168.248.241"  # Standard loopback interface address (localhost)
+HOSTIP = "192.168.1.106"  # Standard loopback interface address (localhost)
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 DATAFORMAT = "<fffi"
 
@@ -120,7 +120,7 @@ def main(args=None):
     # msg = Float64MultiArray()
     # msg.data = [0.0, 0.0]
     
-    mp_controller = MP_Controller(1)
+    mp_controller = MP_Controller()
 
     pygame.init()
     pygame.font.init()
@@ -188,7 +188,7 @@ def main(args=None):
                 menutexts[1].setText(f"Last Score: {score[0]}-{score[1]}")
             else:
                 if result == "host":
-                    mp_controller.detect_async(frame, GAMEMODE)
+                    mp_controller.detect_async(frame)
                     act = 0
                     if client is None:
                         try:
@@ -249,7 +249,7 @@ def main(args=None):
                         if GAMEMODE != 0:
                             client.sendmsg((struct.pack(DATAFORMAT, r_bar.y/resolution[1], ball.x/resolution[0], ball.y/resolution[1], act),))
                 else:
-                    mp_controller.detect_async(frame, GAMEMODE)
+                    mp_controller.detect_async(frame)
                     texts[1].visibility = False
                     try:
                         raw, _, _, _ = s.recvmsg(struct.calcsize(DATAFORMAT))
