@@ -98,6 +98,9 @@ def eventcheck():
                                     if toggle_button_finger: 
                                         game_flag = "finger"
                                         buttons[2].setColor(color_button)
+                                        buttons[3].setColor((255,255,255))
+                                        if not toggle_button_nose:
+                                            toggle_button_nose = not toggle_button_nose
                                     else:   
                                         game_flag = "none"
                                         buttons[2].setColor((255,255,255))
@@ -108,6 +111,9 @@ def eventcheck():
                                     if toggle_button_nose: 
                                         game_flag = "nose"
                                         buttons[3].setColor(color_button)
+                                        buttons[2].setColor((255,255,255))
+                                        if not toggle_button_finger:
+                                            toggle_button_finger = not toggle_button_finger
                                     else:   
                                         game_flag = "none"
                                         buttons[3].setColor((255,255,255))
