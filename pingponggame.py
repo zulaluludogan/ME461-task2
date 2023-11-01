@@ -71,7 +71,7 @@ def render(display, index):
     pygame.display.flip()
 
 def eventcheck():
-    global GAMEMODE, score, result
+    global GAMEMODE, score, result, game_flag
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             return True
@@ -88,7 +88,11 @@ def eventcheck():
                         if button.checkHover(np.array(event.pos)):
                             #Get which button is pressed
                             result = button.clickFunction()
-                            if result == "host":
+                            if result == "finger":
+                                game_flag = "finger"
+                            elif result == "nose":
+                                game_flag = "nose"
+                            elif result == "host":
                                 GAMEMODE = 1
                                 score = [0,0]
                                 s.bind((HOSTIP,PORT))
@@ -102,6 +106,7 @@ def eventcheck():
                     for selector in selectors:
                         if selector.checkHover(np.array(event.pos)):
                             selector.clickFunction()
+                
     return False
 
 def main(args=None):
@@ -161,6 +166,9 @@ def main(args=None):
 
         buttons.append(Button("host",resolution[0]*(220/640),resolution[1]*(160/360),width=resolution[0]*(60/640),height=resolution[1]*(30/360),text="Host Game"))
         buttons.append(Button("client",resolution[0]*(420/640),resolution[1]*(160/360),width=resolution[0]*(60/640),height=resolution[1]*(30/360),text="Join Game"))
+
+        buttons.append(Button("finger",resolution[0]*(200/640),resolution[1]*(210/360),width=resolution[0]*(60/640),height=resolution[1]*(30/360),text="Finger Game"))
+        buttons.append(Button("nose",resolution[0]*(440/640),resolution[1]*(210/360),width=resolution[0]*(60/640),height=resolution[1]*(30/360),text="Nose Game"))
         
         l_bar = Bar(resolution[0]*(10/640), resolution[1]*(180/360),resolution[1]*(20/360),resolution[1]*(90/360),resolution[1])
         r_bar = Bar(resolution[0]*(630/640), resolution[1]*(180/360),resolution[1]*(20/360),resolution[1]*(90/360),resolution[1])
@@ -211,7 +219,10 @@ def main(args=None):
                             l_bar.sety(l_bar_y*resolution[1])
                             
                         try:
-                            index = mp_controller.get_index_tip_coordinates()
+                            if game_flag == "finger" :
+                                index = mp_controller.get_index_tip_coordinates()
+                            elif game_flag == "nose" :
+                                index = mp_controller.get_nose_coordinates()
                         except:
                             pass
                             
@@ -269,7 +280,11 @@ def main(args=None):
                             texts[0].setText(f"Score: {score[0]}-{score[1]}")
 
                     try:
-                        index = mp_controller.get_nose_coordinates()
+                        if game_flag == "finger" :
+                                index = mp_controller.get_index_tip_coordinates()
+                        elif game_flag == "nose" :
+                                index = mp_controller.get_nose_coordinates()
+    
                     except:
                         pass
                         
