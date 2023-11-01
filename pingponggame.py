@@ -26,8 +26,8 @@ import random
 import socket
 import struct
 
-HOSTIP = "192.168.1.106"  # Standard loopback interface address (localhost)
-PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
+HOSTIP = "192.168.43.235"  # Standard loopback interface address (localhost)
+PORT = 5555  # Port to listen on (non-privileged ports are > 1023)
 DATAFORMAT = "<fffi"
 
 # import rclpy
@@ -36,7 +36,7 @@ DATAFORMAT = "<fffi"
 
 
 GAMEMODE = 0
-FULLSCREEN = 1
+FULLSCREEN = 0
 
 def make_surface_rgba(array):
     """Returns a surface made from a [w, h, 4] numpy array with per-pixel alpha
@@ -269,7 +269,7 @@ def main(args=None):
                             texts[0].setText(f"Score: {score[0]}-{score[1]}")
 
                     try:
-                        index = mp_controller.get_index_tip_coordinates()
+                        index = mp_controller.get_nose_coordinates()
                     except:
                         pass
                         
