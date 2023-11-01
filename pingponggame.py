@@ -30,6 +30,11 @@ HOSTIP = "192.168.43.235"  # Standard loopback interface address (localhost)
 PORT = 5555  # Port to listen on (non-privileged ports are > 1023)
 DATAFORMAT = "<fffi"
 
+color_button = (255,0,0)
+toggle_button_finger = 1
+toggle_button_nose = 1
+
+
 # import rclpy
 # from rclpy.node import Node
 # from example_interfaces.msg import Float64MultiArray
@@ -71,7 +76,7 @@ def render(display, index):
     pygame.display.flip()
 
 def eventcheck():
-    global GAMEMODE, score, result, game_flag
+    global GAMEMODE, score, result, game_flag, toggle_button_finger, toggle_button_nose
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             return True
@@ -88,10 +93,27 @@ def eventcheck():
                         if button.checkHover(np.array(event.pos)):
                             #Get which button is pressed
                             result = button.clickFunction()
+
                             if result == "finger":
-                                game_flag = "finger"
+                                    if toggle_button_finger: 
+                                        game_flag = "finger"
+                                        buttons[2].setColor(color_button)
+                                    else:   
+                                        game_flag = "none"
+                                        buttons[2].setColor((255,255,255))
+                                    toggle_button_finger = not toggle_button_finger
+                                        
+
                             elif result == "nose":
-                                game_flag = "nose"
+                                    if toggle_button_nose: 
+                                        game_flag = "nose"
+                                        buttons[3].setColor(color_button)
+                                    else:   
+                                        game_flag = "none"
+                                        buttons[3].setColor((255,255,255))
+
+                                    toggle_button_nose = not toggle_button_nose
+
                             elif result == "host":
                                 GAMEMODE = 1
                                 score = [0,0]
@@ -301,7 +323,7 @@ def main(args=None):
                     
                     
             render(display,index)
-            print(clock.tick(30))
+            clock.tick(30)
     except:
         cap.release()
         pygame.quit()
