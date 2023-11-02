@@ -222,6 +222,7 @@ def main(args=None):
 
             if GAMEMODE == 0:
                 menutexts[1].setText(f"Last Score: {score[0]}-{score[1]}")
+                endflag = 0
             else:
                 if result == "host":
                     mp_controller.detect_async(frame)
