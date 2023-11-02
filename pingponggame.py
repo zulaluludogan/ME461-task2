@@ -28,7 +28,7 @@ import struct
 
 HOSTIP = "192.168.43.235"  # Standard loopback interface address (localhost)
 PORT = 5555  # Port to listen on (non-privileged ports are > 1023)
-DATAFORMAT = "<fffi"
+DATAFORMAT = "<fffii"
 
 color_button = (255,0,0)
 toggle_button_finger = 1
@@ -136,9 +136,9 @@ def eventcheck():
                             selector.clickFunction()
                 
     return False
-
+endflag = 0
 def main(args=None):
-    global texts, menutexts, buttons, selectors, progressbars, resolution, GAMEMODE, score, l_bar, r_bar, ball, s, result
+    global texts, menutexts, buttons, selectors, progressbars, resolution, GAMEMODE, score, l_bar, r_bar, ball, s, result,endflag
     texts = []
     menutexts = []
     buttons = []
@@ -243,7 +243,7 @@ def main(args=None):
                             pass
                         else:
                             print(raw)
-                            l_bar_y,_,_,_ = struct.unpack(DATAFORMAT,raw)
+                            l_bar_y,_,_,_,endflag = struct.unpack(DATAFORMAT,raw)
                             l_bar.sety(l_bar_y*resolution[1])
                             
                         try:
@@ -273,8 +273,10 @@ def main(args=None):
                             else:
                                 score[0] += 1 # Increase the left score
                                 act = 2
-                            if score[0] == 9 or score[1] == 9:
+                            if score[0] == 3 or score[1] == 3 or endflag:
                                 GAMEMODE = 0
+                                endflag = 1
+
                                 # client.close()
                                 # s.close()
                                 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -286,7 +288,7 @@ def main(args=None):
                             vel = vel*resolution[0]*(12/640)/np.sqrt(vel.dot(vel))
                             ball.setVel(vel)
                         if GAMEMODE != 0:
-                            client.sendmsg((struct.pack(DATAFORMAT, r_bar.y/resolution[1], ball.x/resolution[0], ball.y/resolution[1], act),))
+                            client.sendmsg((struct.pack(DATAFORMAT, r_bar.y/resolution[1], ball.x/resolution[0], ball.y/resolution[1], act), endflag))
                 else:
                     mp_controller.detect_async(frame)
                     texts[1].visibility = False
@@ -303,8 +305,9 @@ def main(args=None):
                                 score[1] += 1 # Increase the right score
                             else:
                                 score[0] += 1 # Increase the left score
-                            if score[0] == 9 or score[1] == 9:
+                            if score[0] == 3 or score[1] == 3 or endflag:
                                 GAMEMODE = 0
+                                endflag = 1
                             texts[0].setText(f"Score: {score[0]}-{score[1]}")
 
                     try:
@@ -323,7 +326,7 @@ def main(args=None):
                         index = (int(index[0]*resolution[0]),int(index[1]*resolution[1]*4/3))
                         l_bar.sety(index[1])
                     if GAMEMODE != 0:
-                        packet = struct.pack(DATAFORMAT,l_bar.y/resolution[1],0.,0.,0)
+                        packet = struct.pack(DATAFORMAT,l_bar.y/resolution[1],0.,0.,0, endflag)
                         s.sendmsg((packet,))
 
                     
